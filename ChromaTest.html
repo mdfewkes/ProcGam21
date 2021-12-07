@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>Document</title>
+    </head>
+    <body>
+        
+    </body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/@tonaljs/tonal@4.6.5/browser/tonal.min.js"></script>
+<script>
+    var arr = [];
+    Tonal.Note.names().forEach(noteName => {
+        Tonal.Scale.names().forEach(scaleSuffix=> {
+            const scaleName = `${noteName} ${scaleSuffix}`;
+            const scaleObj = Tonal.Scale.get(scaleName);
+            arr.push(scaleObj);
+            const scaleName2 = `${noteName}b ${scaleSuffix}`;
+            const scaleObj2 = Tonal.Scale.get(scaleName2);
+            arr.push(scaleObj2);
+        });
+    });
+    console.log(arr);
+</script>
