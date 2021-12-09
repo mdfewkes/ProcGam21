@@ -29,11 +29,26 @@ const NoteName = {
 	"B#": 0
 }
 
+const NoteNumber = {
+	0: "C",
+	1: "C#",
+	2: "D",
+	3: "D#",
+	4: "E",
+	5: "F",
+	6: "F#",
+	7: "G",
+	8: "G#",
+	9: "A",
+	10: "A#",
+	11: "B"
+}
+
 function Chord(root = 0, quality = Quality.Major) {
 	this.root = (root < 0 ? root + 12 : root) % 12;
 	this.quality = quality;
 
-	this.getBitmask = function() {
+	this.getChroma = function() {
 		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
 		var chordMask = "1";
 
@@ -59,6 +74,28 @@ function Chord(root = 0, quality = Quality.Major) {
 		chordMask = chordMask.slice(rotate) + chordMask.slice(0, rotate);
 
 		return chordMask;
+	}
+
+	this.GetSymbol = function() {
+		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
+		var symbol = NoteNumber[this.root];
+
+		switch (quality) {
+			case Quality.Major:
+				symbol += "";
+				break;
+			case Quality.Minor:
+				symbol += "m";
+				break;
+			case Quality.Diminished:
+				symbol += "°";
+				break;
+			case Quality.Augmented:
+				symbol += "+";
+				break;
+		}
+
+		return symbol;
 	}
 }
 
