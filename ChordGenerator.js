@@ -265,12 +265,12 @@ function ChordGenerator() {
 		}
 
 		for (var i = openDomain.length-1; i >= 0; i--) {
-			console.log(openDomain[i].getSymbol() + " " + bitwiseAnd(openDomain[i].getChroma(),chroma) + " " + openDomain[i].getChroma() + " " + chroma);
+			//console.log(openDomain[i].getSymbol() + " " + bitwiseAnd(openDomain[i].getChroma(),chroma) + " " + openDomain[i].getChroma() + " " + chroma);
 			if (bitwiseAnd(openDomain[i].getChroma(),chroma) != openDomain[i].getChroma()) {
 				openDomain.splice(i, 1);
 			}
 		}
-		console.log(JSON.parse(JSON.stringify(openDomain)));
+		//console.log(JSON.parse(JSON.stringify(openDomain)));
 	}
 
 	function addRules(newRules)  {
@@ -289,7 +289,7 @@ function ChordGenerator() {
 		}
 		if (isBroken()) {
 			console.log("Output gridlocked, trying failsafe")
-			AddRules(failsafeRules);
+			addRules(failsafeRules);
 			progression = JSON.parse(JSON.stringify(cells));
 			for (var i = 0; i < progression.length; i++) {
 				propagate(i);
