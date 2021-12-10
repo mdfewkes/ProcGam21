@@ -194,6 +194,7 @@ function ChordGenerator() {
 	}
 	//console.log(openDomain);
 	var loopProgression = false;
+	var forgivingOutput = false;
 	var progression = [];
 	var rules = testRules;
 
@@ -262,16 +263,25 @@ function ChordGenerator() {
 		}
 	}
 
-	function runGenerator(cells, itaration = 5) {
-		//console.log("runGenerator " + itaration);
-		if (itaration <= 0) return;
+	function runGenerator(cells) {
+		//console.log("runGenerator");
+
 
 		progression = JSON.parse(JSON.stringify(cells));
 		for (var i = 0; i < progression.length; i++) {
 			propagate(i);
 		}
 		if (isBroken()) {
+			console.log("Output gridlocked, trying failsafe")
 			AddRules(failsafeRules);
+			progression = JSON.parse(JSON.stringify(cells));
+			for (var i = 0; i < progression.length; i++) {
+				propagate(i);
+			}
+		}
+		if (isBroken()) {
+			console.log("Output still gridlocked, loosening restrictions")
+			forgivingOutput = true;
 			progression = JSON.parse(JSON.stringify(cells));
 			for (var i = 0; i < progression.length; i++) {
 				propagate(i);
@@ -283,7 +293,8 @@ function ChordGenerator() {
 		while (!isCollapsed()) {
 			iterate();
 		}
-		if (isBroken()) runGenerator(cells, itaration-1);
+
+		forgivingOutput = false;
 	}
 
 	function iterate() {
@@ -308,7 +319,7 @@ function ChordGenerator() {
 			var forwardIndex = currentIndex + 1;
 			if (loopProgression) forwardIndex = forwardIndex % progression.length;
 			if (forwardIndex < progression.length) { //no loop
-				//if (progression[currentIndex+1].length <= 1) continue;
+				if (forgivingOutput && progression[currentIndex+1].length <= 1) continue;
 				var changed = false;
 
 				//Loop over second chord
@@ -337,7 +348,7 @@ function ChordGenerator() {
 			var backwardIndex = currentIndex - 1;
 			if (loopProgression && currentIndex-1 < 0) backwardIndex = progression.length - 1;
 			if (backwardIndex >= 0) { //no loop
-				//if (progression[currentIndex-1].length <= 1) continue;
+				if (forgivingOutput && progression[currentIndex-1].length <= 1) continue;
 				var changed = false;
 
 				//Loop over first chord
