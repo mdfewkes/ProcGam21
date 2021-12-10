@@ -5,6 +5,13 @@ const Quality = {
 	Augmented: 3
 }
 
+const QualityDecode = {
+	0: "Major",
+	1: "Minor",
+	2: "Diminished",
+	3: "Augmented"
+}
+
 const NoteName = {
 	"Cb": 11,
 	"C": 0,
@@ -76,7 +83,7 @@ function Chord(root = 0, quality = Quality.Major) {
 		return chordMask;
 	}
 
-	this.GetSymbol = function() {
+	this.getSymbol = function() {
 		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
 		var symbol = NoteNumber[this.root];
 
@@ -174,13 +181,15 @@ var testRules = [
 	new Rule(1, Quality.Diminished, Quality.Major),
 	new Rule(1, Quality.Diminished, Quality.Minor),
 	new Rule(4, Quality.Major, Quality.Diminished),
+	new Rule(6, Quality.Major, Quality.Diminished),
+	new Rule(5, Quality.Augmented, Quality.Major),
 ];
 
 function ChordGenerator() {
 	var openDomain = [];
 	for (var i = 0; i < 12; i++) {
 		for (var j = 0; j < 4; j++) {
-			openDomain.push(new Chord(i, j));
+			openDomain.push(new Chord(i, Quality[QualityDecode[j]]));
 		}
 	}
 	//console.log(openDomain);
@@ -195,11 +204,19 @@ function ChordGenerator() {
 		new Rule(0, Quality.Augmented, Quality.Augmented),
 	]
 
-	this.generateProgressionOfLength = function(numberOfChords, loop = false) {
+	this.generateProgressionOfLength = function(numberOfChords, loop = false, firstChord = 0, lastChord = 0) {
 		var passCell = [];
 		for (var i = 0; i < numberOfChords; i++) {
-			passCell.push(0);
+			if (i == 0) {
+				passCell.push(firstChord);
+			} else if (i == numberOfChords - 1) {
+				passCell.push(lastChord);
+			} else {
+				passCell.push(0);
+			}
 		}
+		//console.log("generateProgressionOfLength");
+		//console.log(passCell);
 
 		return this.generateProgressionFromTemplate(passCell, loop);
 	}
@@ -246,16 +263,23 @@ function ChordGenerator() {
 	}
 
 	function runGenerator(cells, itaration = 5) {
-		console.log("runGenerator " + itaration);
-		if (itaration == 1) AddRules(failsafeRules);
+		//console.log("runGenerator " + itaration);
 		if (itaration <= 0) return;
 
 		progression = JSON.parse(JSON.stringify(cells));
-		console.log(JSON.parse(JSON.stringify(progression)));
 		for (var i = 0; i < progression.length; i++) {
 			propagate(i);
 		}
-		console.log(JSON.parse(JSON.stringify(progression)));
+		if (isBroken()) {
+			AddRules(failsafeRules);
+			progression = JSON.parse(JSON.stringify(cells));
+			for (var i = 0; i < progression.length; i++) {
+				propagate(i);
+			}
+		}
+
+
+		//console.log(JSON.parse(JSON.stringify(progression)));
 		while (!isCollapsed()) {
 			iterate();
 		}
@@ -266,11 +290,11 @@ function ChordGenerator() {
 		//console.log("iterate");
 		var coordIndex = getMinEntripy();
 		collaspeAt(coordIndex);
-		console.log(JSON.parse(JSON.stringify(progression)));
+		//console.log(JSON.parse(JSON.stringify(progression)));
 		propagate(coordIndex);
 	}
 
-	//Todo
+	//Todo: add looping
 	function propagate(index) {
 		var stack = [];
 		stack.push(index);
@@ -281,62 +305,60 @@ function ChordGenerator() {
 			//console.log("propagate " + index + " " + currentIndex);
 
 			//Forward
-			if (currentIndex+1 < progression.length) { //no loop
+			var forwardIndex = currentIndex + 1;
+			if (loopProgression) forwardIndex = forwardIndex % progression.length;
+			if (forwardIndex < progression.length) { //no loop
 				//if (progression[currentIndex+1].length <= 1) continue;
 				var changed = false;
 
-				//Loop over first chord
-				for (var i = progression[currentIndex+1].length-1; i >= 0; i--) {
+				//Loop over second chord
+				for (var i = progression[forwardIndex].length-1; i >= 0; i--) {
 					var matches = 0;
-					//Loop over second chord
+					//Loop over first chord
 					for (var j = progression[currentIndex].length-1; j >= 0; j--) {
 						//Loop over rules
 						for (var r = 0; r < rules.length; r++) {
-							if (rulePossible(progression[currentIndex][j], progression[currentIndex+1][i], rules[r])) {
+							if (rulePossible(progression[currentIndex][j], progression[forwardIndex][i], rules[r])) {
 								matches++;
 							}
 						}
 					}
-					if (matches <= 0) {
-						//console.log("Cutting " + progression[currentIndex+1][i].root + ":" + progression[currentIndex+1][i].quality + " at " + matches + " matches");
-						progression[currentIndex+1].splice(i, 1);
+					if (matches <= 0) {//console.log("Cutting " + progression[currentIndex+1][i].root + ":" + progression[currentIndex+1][i].quality + " at " + matches + " matches");
+						progression[forwardIndex].splice(i, 1);
 						changed = true;
-					} else {
-						//console.log("Keeping " + progression[currentIndex+1][i].root + ":" + progression[currentIndex+1][i].quality + " at " + matches + " matches");
 					}
 				}
 				if (changed) {
-					stack.push(currentIndex+1);
+					stack.push(forwardIndex);
 				}
 			}
 
 			//Backward
-			if (currentIndex-1 >= 0) { //no loop
+			var backwardIndex = currentIndex - 1;
+			if (loopProgression && currentIndex-1 < 0) backwardIndex = progression.length - 1;
+			if (backwardIndex >= 0) { //no loop
 				//if (progression[currentIndex-1].length <= 1) continue;
 				var changed = false;
 
 				//Loop over first chord
-				for (var i = progression[currentIndex-1].length-1; i >= 0; i--) {
+				for (var i = progression[backwardIndex].length-1; i >= 0; i--) {
 					var matches = 0;
 					//Loop over second chord
 					for (var j = progression[currentIndex].length-1; j >= 0; j--) {
 						//Loop over rules
 						for (var r = 0; r < rules.length; r++) {
-							if (rulePossible(progression[currentIndex-1][i], progression[currentIndex][j], rules[r])) {
+							if (rulePossible(progression[backwardIndex][i], progression[currentIndex][j], rules[r])) {
 								matches++;
 							}
 						}
 					}
 					if (matches <= 0) {
-						//console.log("Cutting " + progression[currentIndex-1][i].root + ":" + progression[currentIndex-1][i].quality + " at " + matches + " matches");
-						progression[currentIndex-1].splice(i, 1);
+						progression[backwardIndex].splice(i, 1);
 						changed = true;
-					} else {
-						//console.log("Keeping " + progression[currentIndex-1][i].root + ":" + progression[currentIndex-1][i].quality + " at " + matches + " matches");
 					}
 				}
 				if (changed) {
-					stack.push(currentIndex-1);
+					stack.push(backwardIndex);
 				}
 			}
 
@@ -400,7 +422,7 @@ function ChordGenerator() {
 			}
 		}
 
-		console.log(minis);
+		//console.log(minis);
 		return minis[Math.floor(Math.random() * minis.length)];
 	}
 
