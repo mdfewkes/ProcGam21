@@ -243,21 +243,37 @@ function ChordGenerator() {
 		return progression;
 	}
 
-	this.SetRules = function(newRules)  {
+	this.setRules = function(newRules)  {
 		rules = newRules;
 	}
 
-	this.AddRule = function(newRule)  {
+	this.addRule = function(newRule)  {
 		rules.push(newRule);
 	}
 
-	this.AddRules = function(newRules)  {
+	this.addRules = function(newRules)  {
 		for (var i = 0; i < newRules.length; i++) {
 			rules.push(newRules[i]);
 		}
 	}
 
-	function AddRules(newRules)  {
+	this.setChroma = function(chroma) {
+		for (var i = 0; i < 12; i++) {
+			for (var j = 0; j < 4; j++) {
+				openDomain.push(new Chord(i, Quality[QualityDecode[j]]));
+			}
+		}
+
+		for (var i = openDomain.length-1; i >= 0; i--) {
+			console.log(openDomain[i].getSymbol() + " " + bitwiseAnd(openDomain[i].getChroma(),chroma) + " " + openDomain[i].getChroma() + " " + chroma);
+			if (bitwiseAnd(openDomain[i].getChroma(),chroma) != openDomain[i].getChroma()) {
+				openDomain.splice(i, 1);
+			}
+		}
+		console.log(JSON.parse(JSON.stringify(openDomain)));
+	}
+
+	function addRules(newRules)  {
 		for (var i = 0; i < newRules.length; i++) {
 			rules.push(newRules[i]);
 		}
@@ -305,7 +321,6 @@ function ChordGenerator() {
 		propagate(coordIndex);
 	}
 
-	//Todo: add looping
 	function propagate(index) {
 		var stack = [];
 		stack.push(index);
@@ -377,7 +392,6 @@ function ChordGenerator() {
 			//console.log(JSON.parse(JSON.stringify(progression)));
 
 		}
-
 	}
 
 	function renderProgression() {
@@ -436,5 +450,44 @@ function ChordGenerator() {
 		//console.log(minis);
 		return minis[Math.floor(Math.random() * minis.length)];
 	}
+
+}
+
+bitwiseAnd = function(s1, s2) {
+		 
+	let length = 0;
+
+	let len_a = s1.length;
+	let len_b = s2.length;
+
+	let num_zeros = Math.abs(len_a - len_b);
+
+	if (len_a < len_b) {
+		for(let i = 0; i < num_zeros; i++) {
+			s1 = '0' + s1;
+		}
+	 
+		length = len_b;
+	} else {
+		for (let i = 0; i < num_zeros; i++) {
+			s2 = '0' + s2;
+		}
+		length = len_a;
+	}
+ 
+
+
+ 
+	let res = "";
+ 
+	for(let i = 0 ; i<length; i++) {
+		res = res + String.fromCharCode((s1[i].charCodeAt() -
+										   '0'.charCodeAt() &
+										 s2[i].charCodeAt() -
+										   '0'.charCodeAt()) +
+										   '0'.charCodeAt());
+	}
+	
+	return res;
 
 }
