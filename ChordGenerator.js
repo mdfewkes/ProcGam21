@@ -59,7 +59,6 @@ function Chord(root = 0, quality = Quality.Major) {
 		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
 		var chordMask = "1";
 
-		//Fill mask with quality
 		switch (quality) {
 			case Quality.Major:
 				chordMask = "10001001";
@@ -76,7 +75,13 @@ function Chord(root = 0, quality = Quality.Major) {
 		}
 		chordMask = chordMask.padEnd(12, "0");
 
-		//Rorate mask to root
+		return chordMask;
+	}
+
+	this.getChordMask = function() {
+		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
+		var chordMask = this.getChroma();
+
 		const rotate = chordMask.length - (this.root % chordMask.length);
 		chordMask = chordMask.slice(rotate) + chordMask.slice(0, rotate);
 
@@ -257,7 +262,8 @@ function ChordGenerator() {
 		}
 	}
 
-	this.setChroma = function(chroma) {
+	this.setScaleMask = function(scaleMask, divergence = 0) {
+		openDomain = [];
 		for (var i = 0; i < 12; i++) {
 			for (var j = 0; j < 4; j++) {
 				openDomain.push(new Chord(i, Quality[QualityDecode[j]]));
@@ -265,12 +271,29 @@ function ChordGenerator() {
 		}
 
 		for (var i = openDomain.length-1; i >= 0; i--) {
-			//console.log(openDomain[i].getSymbol() + " " + bitwiseAnd(openDomain[i].getChroma(),chroma) + " " + openDomain[i].getChroma() + " " + chroma);
-			if (bitwiseAnd(openDomain[i].getChroma(),chroma) != openDomain[i].getChroma()) {
+			//console.log(openDomain[i].getSymbol() + " " + bitwiseAnd(openDomain[i].getChordMask(),scaleMask) + " " + openDomain[i].getChordMask() + " " + scaleMask);
+
+			var testMask = bitwiseAnd(openDomain[i].getChordMask(),scaleMask);
+			var difference = 3;
+			for (var j = 0; j < testMask.length; j++) {
+				if (testMask[j] == "1") difference--;
+				//console.log(testMask[j]);
+			}
+			//console.log(difference);
+			if (difference > divergence) {
 				openDomain.splice(i, 1);
 			}
 		}
 		//console.log(JSON.parse(JSON.stringify(openDomain)));
+	}
+
+	this.setChroma = function(chroma, root = 0, divergence = 0) {
+		var scaleMask = chroma;
+
+		const rotate = scaleMask.length - (root % scaleMask.length);
+		scaleMask = scaleMask.slice(rotate) + scaleMask.slice(0, rotate);
+
+		this.setScaleMask(scaleMask, divergence);
 	}
 
 	function addRules(newRules)  {
