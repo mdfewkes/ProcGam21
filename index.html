@@ -1,14 +1,405 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <meta content="text/html" http-equiv="encoding">
-</head>
-
-<body>
+<html>
+    <head>
+        <title>Document</title>
+    </head>
+    <body>
+        <fieldset id="seed_fieldset">
+            <legend>seed</legend>
+            <div id="seed_wrapper">
+                 <input id="seed_str" value="foobar" type="text" />
+                 <button onclick="window.playSong()">Generate & Play</button>
+            </div>
+        </fieldset>
+    <!-- Code injected by live-server -->
+<script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script></body>
+</html>
+<script src="INSTRUMENT_ARR.js"></script>
+<script src="BEAT_ARR.js"></script>
+<script src="SECTION_TYPES.js"></script>
 
 <script src="ChordGenerator.js"></script>
 
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/@tonaljs/tonal@4.6.5/browser/tonal.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dicebear/avatars@4.10.1/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dicebear/avatars-bottts-sprites@4.10.1/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/faker@5.4.0/dist/faker.js"></script>
+<script src="zzfx.js"></script>
+<script src="zzfxm.js"></script>
+<script src="seedrandom.js"></script>
+<script src="noise.js"></script>
+<script>
+
+    const instrumentArr = INSTRUMENT_ARR.map(n=>n.zzfx);
+    let MUSICIAN_AI = {};
+    generateMusicians("foobar");
+    function generateMusicians(seed) {
+        Math.seedrandom(seed);
+        MUSICIAN_AI = {
+            "BEAT_BOT_9000": {
+                monotone: true,
+                sections: {
+                    "I": [
+                        {
+                            instrumentIdx: 0,
+                            octaves: [3,3,3],
+                            beat: [
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 5,
+                            octaves: [1,2,3],
+                            beat: [
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                    ],
+                    "V": [
+                        {
+                            instrumentIdx: 12,
+                            octaves: [3,2,3],
+                            beat: [
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 4,
+                            octaves: [4,3,4],
+                            beat: [
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                                quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                    ],
+                },
+            },
+            "TRILL_BOT_6500": {
+                monotone: true,
+                sections: {
+                    "I": [
+                        {
+                            instrumentIdx: 0,
+                            octaves: [3,3,3],
+                            beat: [
+                                "00000000",
+                                "00000000",
+                                "01111111",
+                                "10000000",
+                                // quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 5,
+                            octaves: [1,1,1],
+                            beat: [
+                                "00000000",
+                                "10100010",
+                                "10001110",
+                            ]
+                        },
+                    ],
+                    "V": [
+                        {
+                            instrumentIdx: 18,
+                            octaves: [4,4,4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 12,
+                            octaves: [4,[4,5],4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 13,
+                            octaves: [4,[3,5],4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                    ],
+                },
+            },
+            "BUZZ_BOT_350": {
+                monotone: true,
+                sections: {
+                    "I": [
+                        {
+                            instrumentIdx: 1,
+                            octaves: [3,3,3],
+                            beat: [
+                                "00000000",
+                                "00000000",
+                                "01111111",
+                                "10000000",
+                                // quantumBeat("hmmmhmmm"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 5,
+                            octaves: [1,1,1],
+                            beat: [
+                                "00000000",
+                                "10100010",
+                                "10001110",
+                            ]
+                        },
+                    ],
+                    "V": [
+                        {
+                            instrumentIdx: 18,
+                            octaves: [4,4,4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 13,
+                            octaves: [4,[3,5],4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                    ],
+                    "C": [
+                        {
+                            instrumentIdx: 15,
+                            octaves: [4,4,[5,6,5,4]],
+                            beat: [
+                                quantumBeat("defgdefg"),
+                                quantumBeat("defgdefg"),
+                                quantumBeat("defgdefg"),
+                            ]
+                        },
+                        {
+                            instrumentIdx: 13,
+                            octaves: [4,[3,5],4],
+                            beat: [
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                                quantumBeat("vxyzvxyz"),
+                            ]
+                        },
+                    ],
+                },
+            },
+        };
+    }
+    function quantumBeat(quantumStr){
+        const min = 97;
+        const max = 122;
+        const spread = max - min
+        const beatStr = quantumStr.toLowerCase().split("").map(c=>{
+            const charCode = c.charCodeAt(0);
+            const v = (charCode - min) / spread;
+            let ret = "0";
+            if(Math.random() > v) {
+                ret = "1";
+            }
+            return ret;
+        }).join("");
+        return beatStr;
+    }
+    function getNote(b, sectionKey, sectionBarIdx, bi, chord, ii) {
+        if(!this.cache)this.cache = {};
+        const cacheKey = `${sectionKey}_${sectionBarIdx}_${ii}`;
+        if(!this.cache[cacheKey])this.cache[cacheKey] = [];
+        let zzfxNote = this.cache[cacheKey][bi];
+        console.log('zzfxNote === ',zzfxNote);
+        console.log('this.cache[sectionKey] === ',this.cache[sectionKey]);
+        if(typeof zzfxNote === "undefined") {
+            console.log('this.sections[sectionKey][ii] === ',this.sections[sectionKey][ii]);
+            let noteName = chord.notes[Math.floor(Math.random() * chord.notes.length)];
+            if(typeof this.monotone !== "undefined"){
+                chord.notes[this.monotone];
+            }
+            const isMonotone = this.monotone;
+
+            const sectionBarTotal = SECTION_TYPES[sectionKey].bars;
+            const sectionRatio = sectionBarIdx / sectionBarTotal;
+            const octavesArr = this.sections[sectionKey][ii].octaves;
+            let octave = octavesArr[sectionBarIdx % octavesArr.length];
+            if(octave instanceof Array){
+                octave = octave[bi % octave.length];
+            }
+            const fullNoteName = `${noteName}${octave}`;
+            console.log('fullNoteName === ',fullNoteName);
+            const midiNote = Tonal.Midi.toMidi(fullNoteName);
+            zzfxNote = b ? midiNote - 12 : 0;
+            this.cache[cacheKey].push(zzfxNote);
+        }
+        return zzfxNote;
+    }
+    console.log('MUSICIAN_AI === ',MUSICIAN_AI);
+    
+    const SONG_PATTERN = "IVCVCSCCE";
+    // const SONG_PATTERN = "ICCI";
+    // const SONG_PATTERN = "IV";
+    
+    window.playSong = () => {
+
+        if(window?.zzfxmNode?.stop){
+            window.zzfxmNode.stop();
+        }
+
+        const seed_str = document.getElementById("seed_str");
+
+        generateMusicians(seed_str.value);
+
+        Math.seedrandom(seed_str.value);
+
+        console.groupCollapsed('ChordGenerator');
+        var chordGenerator = new ChordGenerator();
+        var generatedChordArr = chordGenerator.generateProgressionOfLength(4);
+        console.groupEnd();
+
+        console.log('generatedChordArr === ',generatedChordArr);
+
+        const chordArr = generatedChordArr.map((n,i)=>{
+            const chord = new Chord(n.root, n.quality);
+            const chordName = chord.getSymbol();
+            const ret = Tonal.Chord.get(chordName);
+            return ret;
+        });
+
+        const barArr = [];
+        const orderArr = [];
+
+        const songData = [
+            instrumentArr, // array of zzfx instruments
+            [], // arrays of section notes and beats
+            [], // array of section play order (linear for now)
+            90 // BPM
+        ];
+        let barIdx = 0;
+        SONG_PATTERN.split("").forEach(k=>{
+            const s = SECTION_TYPES[k];
+            const prog = [];
+            let ti = 0;
+            while(prog.length < s.bars){
+                const n = s.prog[ti % (s.prog.length)];
+                console.log('n === ',n);
+                for(let _ti = 0; _ti < n;_ti++){
+                    prog.push(chordArr[(ti + _ti) % chordArr.length]);
+                }
+                ti++;
+            }
+            console.log('prog === ', prog);
+            // s.prog.split("").reduce((r,n,i)=>{
+            //     return r;
+            // },[]);
+            for(let i = 0; i < s.bars;i++){
+                console.groupCollapsed('barIdx === ',barIdx);
+                const sectionBarArr = [];
+                Object.entries(MUSICIAN_AI).forEach((m,mi)=>{
+                    const [name,data] = m;
+                    const {sections} = data;
+                    if(!data.cache)data.cache = {};
+                    if(sections[k]) {
+                        // const didntExist = !data.cache[k];
+                        // if(didntExist)data.cache[k] = [];
+                        const insts = sections[k];
+                        console.log('name,insts === ',name,insts);
+                        const instsArr = [];
+                        insts.forEach((inst,ii)=>{
+                            const instIdx = inst.instrumentIdx;
+                            let beat = inst.beat[i % inst.beat.length];
+                            if(typeof beat === "string") {
+                                beat = beat.split("").map(Number);
+                            }
+                            const leftRight = (ii%2) ? 1 : -1;
+                            const noteArr = [instIdx,leftRight,...beat.map((b,bi)=>{
+                                return getNote.call(data,b,k,i,bi,prog[i%prog.length], ii);
+                            })];
+                            sectionBarArr.push(noteArr);
+                            // if(didntExist)data.cache[k].push(noteArr);
+                        });
+                        data.cache[k] = [...sectionBarArr];
+                    }
+                });
+                console.log('sectionBarArr === ',sectionBarArr);
+                if(sectionBarArr.length){
+                    barArr.push(sectionBarArr);
+                    orderArr.push(barIdx);
+                    barIdx++;
+                }
+                console.groupEnd();
+            }
+        });
+        console.log('barArr.length === ',barArr.length);
+        songData[1] = barArr;
+        songData[2] = orderArr;
+        visualizeBars(songData);
+    
+        console.log('songData === ',songData);
+        const zzfxmBuffer = zzfxM(...songData);
+        window.zzfxmNode = zzfxP(...zzfxmBuffer);
+        // zzfxmNode.loop = true;
+        console.log('zzfxmNode === ',zzfxmNode);
+    }
+    function visualizeBars(songData) {
+        songData[1].forEach(barData=>{
+            console.table(barData);
+        })
+    }
+</script>
