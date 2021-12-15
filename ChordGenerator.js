@@ -322,9 +322,6 @@ function ChordGenerator() {
 			console.log("Output still gridlocked, loosening restrictions")
 			forgivingOutput = true;
 			progression = JSON.parse(JSON.stringify(cells));
-			for (var i = 0; i < progression.length; i++) {
-				propagate(i);
-			}
 		}
 
 
@@ -357,11 +354,13 @@ function ChordGenerator() {
 			var forwardIndex = currentIndex + 1;
 			if (loopProgression) forwardIndex = forwardIndex % progression.length;
 			if (forwardIndex < progression.length) { //no loop
-				if (forgivingOutput && progression[currentIndex+1].length <= 1) continue;
+				if (forgivingOutput && progression[forwardIndex].length <= 1) continue;
 				var changed = false;
 
 				//Loop over second chord
 				for (var i = progression[forwardIndex].length-1; i >= 0; i--) {
+					if (forgivingOutput && progression[forwardIndex].length <= 1) continue;
+
 					var matches = 0;
 					//Loop over first chord
 					for (var j = progression[currentIndex].length-1; j >= 0; j--) {
@@ -386,11 +385,13 @@ function ChordGenerator() {
 			var backwardIndex = currentIndex - 1;
 			if (loopProgression && currentIndex-1 < 0) backwardIndex = progression.length - 1;
 			if (backwardIndex >= 0) { //no loop
-				if (forgivingOutput && progression[currentIndex-1].length <= 1) continue;
+				if (forgivingOutput && progression[backwardIndex].length <= 1) continue;
 				var changed = false;
 
 				//Loop over first chord
 				for (var i = progression[backwardIndex].length-1; i >= 0; i--) {
+					if (forgivingOutput && progression[backwardIndex].length <= 1) continue;
+
 					var matches = 0;
 					//Loop over second chord
 					for (var j = progression[currentIndex].length-1; j >= 0; j--) {

@@ -5,4 +5,4 @@ const BEAT_ARR = [
     "1010101010101010",
     "1111111111111111",
 ].map(n=>n.split("").map(Number));
-console.log('BEAT_ARR === ',BEAT_ARR);
+//console.log('BEAT_ARR === ',BEAT_ARR);

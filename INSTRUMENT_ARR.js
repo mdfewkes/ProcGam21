@@ -27,7 +27,7 @@ var arr = [];
 INSTRUMENT_ARR.forEach((n,i)=>{
     const prefix = `/* ${i} */{name:"${n.name}",`.padEnd(40," ");
     const asdf2 = n.zzfx.map(n2=>{
-        console.log('n2 === ',n2);
+        //console.log('n2 === ',n2);
         return n2;
     });
     const asdf3 = [
@@ -42,4 +42,4 @@ INSTRUMENT_ARR.forEach((n,i)=>{
     arr.push(`${prefix}${suffix}`);
 });
 str += arr.join(",\n") + `\n];`;
-console.log('str === ',str);
+//console.log('str === ',str);
