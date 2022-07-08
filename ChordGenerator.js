@@ -117,6 +117,24 @@ function Rule(rootMotion = 0, startingQuality = Quality.Major, endingQuality = Q
 	this.endingQuality = endingQuality;
 }
 
+
+var testRules6 = [
+	new Rule(0, Quality.Major, Quality.Minor),
+	new Rule(0, Quality.Minor, Quality.Major),
+	new Rule(-3, Quality.Major, Quality.Minor),
+	new Rule(3, Quality.Minor, Quality.Major),
+	new Rule(4, Quality.Major, Quality.Minor),
+	new Rule(-4, Quality.Minor, Quality.Major),
+	new Rule(4, Quality.Minor, Quality.Minor),
+	new Rule(-4, Quality.Minor, Quality.Minor),
+	new Rule(5, Quality.Major, Quality.Minor),
+	new Rule(-5, Quality.Minor, Quality.Major),
+	new Rule(5, Quality.Major, Quality.Major),
+	new Rule(-5, Quality.Major, Quality.Major),
+	new Rule(7, Quality.Major, Quality.Minor),
+	new Rule(-7, Quality.Minor, Quality.Major),
+];
+
 //I V vi iii IV I IV V
 var testRules5 = [
 	new Rule(7, Quality.Major, Quality.Major),
@@ -173,6 +191,8 @@ var testRules = [
 	new Rule(-2, Quality.Minor, Quality.Major),
 	new Rule(-3, Quality.Major, Quality.Minor),
 	new Rule(3, Quality.Minor, Quality.Major),
+	new Rule(4, Quality.Minor, Quality.Minor),
+	new Rule(-4, Quality.Minor, Quality.Minor),
 	new Rule(0, Quality.Major, Quality.Minor),
 	//new Rule(0, Quality.Minor, Quality.Major),
 	new Rule(0, Quality.Major, Quality.Augmented),
@@ -232,7 +252,7 @@ function ChordGenerator() {
 
 		var cells = [];
 		for (var i = 0; i < chordProgression.length; i++) {
-			if (chordProgression[i].root != undefined && chordProgression[i].quality != undefined) {
+			if (chordProgression[i] instanceof Chord) {
 				cells.push([chordProgression[i]]);
 			} else if (chordProgression[i].length != undefined) {
 				cells.push(chordProgression[i]);
@@ -252,8 +272,14 @@ function ChordGenerator() {
 		rules = newRules;
 	}
 
-	this.addRule = function(newRule)  {
-		rules.push(newRule);
+	this.addRules = function(newRules)  {
+		if (newRules.length != undefined) {
+			for (var i = 0; i < newRules.length; i++) {
+				rules.push(newRules[i]);
+			}
+		} else {
+			rules.push(newRules);
+		}
 	}
 
 	this.addRules = function(newRules)  {
