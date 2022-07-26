@@ -12,6 +12,13 @@ const QualityDecode = {
 	3: "Augmented"
 }
 
+const QualityWeight = {
+	0: 1,
+	1: 1,
+	2: 0.5,
+	3: 0.25,
+}
+
 const NoteName = {
 	"Cb": 11,
 	"C": 0,
@@ -54,6 +61,7 @@ const NoteNumber = {
 function Chord(root = 0, quality = Quality.Major) {
 	this.root = (root < 0 ? root + 12 : root) % 12;
 	this.quality = quality;
+	this.weight = 1;
 
 	this.getChroma = function() {
 		this.root = (this.root < 0 ? this.root + 12 : this.root) % 12;
@@ -194,17 +202,17 @@ var testRules = [
 	new Rule(4, Quality.Minor, Quality.Minor),
 	new Rule(-4, Quality.Minor, Quality.Minor),
 	new Rule(0, Quality.Major, Quality.Minor),
-	//new Rule(0, Quality.Minor, Quality.Major),
+	new Rule(0, Quality.Minor, Quality.Major),//
 	new Rule(0, Quality.Major, Quality.Augmented),
-	//new Rule(0, Quality.Augmented, Quality.Major),
+	new Rule(0, Quality.Augmented, Quality.Major),//
 	new Rule(0, Quality.Minor, Quality.Diminished),
-	//new Rule(0, Quality.Diminished, Quality.Minor),
-	//new Rule(0, Quality.Minor, Quality.Augmented),
-	//new Rule(0, Quality.Augmented, Quality.Minor),
+	new Rule(0, Quality.Diminished, Quality.Minor),//
+	new Rule(0, Quality.Minor, Quality.Augmented),//
+	new Rule(0, Quality.Augmented, Quality.Minor),//
 	new Rule(0, Quality.Major, Quality.Diminished),
-	//new Rule(0, Quality.Diminished, Quality.Major),
+	new Rule(0, Quality.Diminished, Quality.Major),//
 	new Rule(1, Quality.Diminished, Quality.Major),
-	//new Rule(1, Quality.Diminished, Quality.Minor),
+	new Rule(1, Quality.Diminished, Quality.Minor),//
 	new Rule(4, Quality.Major, Quality.Diminished),
 	new Rule(6, Quality.Major, Quality.Diminished),
 	new Rule(5, Quality.Augmented, Quality.Major),
@@ -214,7 +222,8 @@ function ChordGenerator() {
 	var openDomain = [];
 	for (var i = 0; i < 12; i++) {
 		for (var j = 0; j < 4; j++) {
-			openDomain.push(new Chord(i, Quality[QualityDecode[j]]));
+			openDomain.push(new Chord(i, j));
+			openDomain[openDomain.length-1].weight = QualityWeight[j];
 		}
 	}
 	//console.log(openDomain);
@@ -446,8 +455,29 @@ function ChordGenerator() {
 
 	function renderProgression() {
 		for (var i = 0; i < progression.length; i++) {
-			progression[i] = progression[i][Math.floor(Math.random() * progression[i].length)];
+			//progression[i] = progression[i][Math.floor(Math.random() * progression[i].length)];
+			progression[i] = progression[i][getRandomChord(i)];
 		}
+	}
+
+	function collaspeAt(index) {
+		//console.log(index);
+		//progression[index] = [progression[index][Math.floor(Math.random() * progression[index].length)]];
+		progression[index] = [progression[index][getRandomChord(index)]];
+	}
+
+	function getRandomChord(index) {
+		var sumTotal = 0;
+		for (var i = 0; i < progression[index].length; i++) {
+			sumTotal += progression[index][i].weight;
+		}
+		var randomNum = Math.random() * sumTotal;
+		var currentTotal = 0;
+		for (var i = 0; i < progression[index].length; i++) {
+			currentTotal += progression[index][i].weight;
+			if (randomNum <= currentTotal) return i;
+		}
+		return 0;
 	}
 
 	function rulePossible(chord1, chord2, rule) {
@@ -456,11 +486,6 @@ function ChordGenerator() {
 		return (chord1.quality == rule.startingQuality) 
 		  && (chord2.quality == rule.endingQuality) 
 		  && (newRoot == chord2.root);
-	}
-
-	function collaspeAt(index) {
-		//console.log(index);
-		progression[index] = [progression[index][Math.floor(Math.random() * progression[index].length)]];
 	}
 
 	function isCollapsedAt(index) {
